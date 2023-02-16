@@ -23,10 +23,18 @@ pub fn next_payout_date<T: GetToday>(day: u32, today_provider: T) -> Option<Naiv
     }
 }
 
-pub fn days_until_payout<T: GetToday>(payout_date: NaiveDate, today_provider: T) -> u32 {
+pub fn days_until_payout<T: GetToday>(
+    payout_date: NaiveDate,
+    today_provider: T,
+) -> Result<u32, String> {
     let now = today_provider.today();
     let date_of_payroll = payout_date.signed_duration_since(now);
-    date_of_payroll.num_days() as u32
+    if date_of_payroll.num_days() >= 0 {
+        // Add 1 because the current day is also important
+        Ok(1 + date_of_payroll.num_days() as u32)
+    } else {
+        Err(format!("{now:?} date is before {date_of_payroll:?}"))
+    }
 }
 
 #[cfg(test)]
@@ -91,5 +99,18 @@ mod tests {
 
         assert_eq!(payout_date.day(), 9);
         assert_eq!(payout_date.month(), 3);
+    }
+
+    #[test]
+    fn test_get_days_until_payout() {
+        let days_until_payout =
+            super::days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 20).unwrap(), MockNow);
+
+        assert_eq!(days_until_payout.unwrap(), 11); // also count the current day!
+
+        let days_until_payout =
+            super::days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 7).unwrap(), MockNow);
+        //
+        assert!(days_until_payout.is_err())
     }
 }

@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let days_until_payout = piggy::days_until_payout(payout_date, NowFromChrono);
 
-    println!("{days_until_payout} days left");
+    println!("{days_until_payout:?} days left");
 
     Ok(())
 }
