@@ -1,8 +1,9 @@
 use std::error::Error;
 
 use chrono::prelude::*;
+use piggy::get_data;
 use piggy::traits;
-use piggy::UserInputData;
+
 struct NowFromChrono;
 
 impl traits::GetToday for NowFromChrono {
@@ -12,10 +13,8 @@ impl traits::GetToday for NowFromChrono {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let data = UserInputData {
-        payout_day_of_month: 23,
-        money_amount: 1900,
-    };
+    let data = get_data::from_stdin()?;
+
     let payout_date = piggy::next_payout_date(data.payout_day_of_month, NowFromChrono)?;
 
     let days_until_payout = piggy::days_until_payout(payout_date, NowFromChrono)?;
