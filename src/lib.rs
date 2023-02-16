@@ -69,12 +69,7 @@ mod tests {
 
     #[test]
     fn test_next_payout_date_day_after() {
-        let data = UserInputData {
-            payout_day_of_month: 11,
-            money_amount: 1900,
-        };
-
-        let payout_date = super::_next_payout_date(data.payout_day_of_month, MockNow).unwrap();
+        let payout_date = super::_next_payout_date(11, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 11);
         assert_eq!(payout_date.month(), 2);
@@ -82,12 +77,7 @@ mod tests {
 
     #[test]
     fn test_next_payout_date_same_day() {
-        let data = UserInputData {
-            payout_day_of_month: 10,
-            money_amount: 1900,
-        };
-
-        let payout_date = super::_next_payout_date(data.payout_day_of_month, MockNow).unwrap();
+        let payout_date = super::_next_payout_date(10, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 10);
         assert_eq!(payout_date.month(), 3);
@@ -95,12 +85,7 @@ mod tests {
 
     #[test]
     fn test_next_payout_date_day_before() {
-        let data = UserInputData {
-            payout_day_of_month: 9,
-            money_amount: 1900,
-        };
-
-        let payout_date = super::_next_payout_date(data.payout_day_of_month, MockNow).unwrap();
+        let payout_date = super::_next_payout_date(9, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 9);
         assert_eq!(payout_date.month(), 3);
