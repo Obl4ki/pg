@@ -1,23 +1,11 @@
 use std::error::Error;
 
-use chrono::prelude::*;
-use piggy::get_data;
-use piggy::traits;
-
-struct NowFromChrono;
-
-impl traits::GetToday for NowFromChrono {
-    fn today(&self) -> NaiveDate {
-        Utc::now().date_naive()
-    }
-}
-
 fn main() -> Result<(), Box<dyn Error>> {
-    let data = get_data::from_stdin()?;
+    let data = piggy::get_data::from_stdin()?;
 
-    let payout_date = piggy::next_payout_date(data.payout_day_of_month, NowFromChrono)?;
+    let payout_date = piggy::next_payout_date(data.payout_day_of_month)?;
 
-    let days_until_payout = piggy::days_until_payout(payout_date, NowFromChrono)?;
+    let days_until_payout = piggy::days_until_payout(payout_date)?;
 
     let amount_per_day = piggy::calculate_money_per_day(data.money_amount, days_until_payout);
 

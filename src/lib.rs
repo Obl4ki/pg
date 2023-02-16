@@ -1,8 +1,10 @@
+pub mod dates;
 pub mod get_data;
 pub mod traits;
 
 use chrono::prelude::*;
 use chronoutil::RelativeDuration;
+use dates::NowFromChrono;
 use traits::GetToday;
 
 #[derive(Clone, Copy, Debug)]
@@ -11,7 +13,14 @@ pub struct UserInputData {
     pub money_amount: u32,
 }
 
-pub fn next_payout_date<T: GetToday>(day: u32, today_provider: T) -> Result<NaiveDate, String> {
+pub fn next_payout_date(day: u32) -> Result<NaiveDate, String> {
+    _next_payout_date(day, NowFromChrono)
+}
+
+pub(crate) fn _next_payout_date<T: GetToday>(
+    day: u32,
+    today_provider: T,
+) -> Result<NaiveDate, String> {
     let now = today_provider.today();
     let date_of_payroll = now
         .with_day(day)
@@ -26,7 +35,11 @@ pub fn next_payout_date<T: GetToday>(day: u32, today_provider: T) -> Result<Naiv
     }
 }
 
-pub fn days_until_payout<T: GetToday>(
+pub fn days_until_payout(payout_date: NaiveDate) -> Result<u32, String> {
+    _days_until_payout(payout_date, NowFromChrono)
+}
+
+pub(crate) fn _days_until_payout<T: GetToday>(
     payout_date: NaiveDate,
     today_provider: T,
 ) -> Result<u32, String> {
@@ -61,7 +74,7 @@ mod tests {
             money_amount: 1900,
         };
 
-        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow).unwrap();
+        let payout_date = super::_next_payout_date(data.payout_day_of_month, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 11);
         assert_eq!(payout_date.month(), 2);
@@ -74,7 +87,7 @@ mod tests {
             money_amount: 1900,
         };
 
-        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow).unwrap();
+        let payout_date = super::_next_payout_date(data.payout_day_of_month, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 10);
         assert_eq!(payout_date.month(), 3);
@@ -87,7 +100,7 @@ mod tests {
             money_amount: 1900,
         };
 
-        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow).unwrap();
+        let payout_date = super::_next_payout_date(data.payout_day_of_month, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 9);
         assert_eq!(payout_date.month(), 3);
@@ -96,12 +109,12 @@ mod tests {
     #[test]
     fn test_get_days_until_payout() {
         let days_until_payout =
-            super::days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 20).unwrap(), MockNow);
+            super::_days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 20).unwrap(), MockNow);
 
         assert_eq!(days_until_payout.unwrap(), 11); // also count the current day!
 
         let days_until_payout =
-            super::days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 7).unwrap(), MockNow);
+            super::_days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 7).unwrap(), MockNow);
         //
         assert!(days_until_payout.is_err())
     }
