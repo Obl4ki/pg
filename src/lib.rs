@@ -10,16 +10,18 @@ pub struct UserInputData {
     pub money_amount: u32,
 }
 
-pub fn next_payout_date<T: GetToday>(day: u32, today_provider: T) -> Option<NaiveDate> {
+pub fn next_payout_date<T: GetToday>(day: u32, today_provider: T) -> Result<NaiveDate, String> {
     let now = today_provider.today();
-    let date_of_payroll = now.with_day(day)?;
+    let date_of_payroll = now
+        .with_day(day)
+        .ok_or(format!("Day {:?} is not correct.", &day))?;
 
     if now.day() >= day {
         let month_after_payroll = date_of_payroll + RelativeDuration::months(1);
 
-        Some(month_after_payroll)
+        Ok(month_after_payroll)
     } else {
-        now.with_day(day)
+        Ok(date_of_payroll)
     }
 }
 
@@ -58,12 +60,7 @@ mod tests {
             money_amount: 1900,
         };
 
-        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow)
-            .ok_or(format!(
-                "Payroll date calculation failed with the following data: {:?}. Check your inputs.",
-                &data
-            ))
-            .unwrap();
+        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 11);
         assert_eq!(payout_date.month(), 2);
@@ -76,12 +73,7 @@ mod tests {
             money_amount: 1900,
         };
 
-        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow)
-            .ok_or(format!(
-                "Payroll date calculation failed with the following data: {:?}. Check your inputs.",
-                &data
-            ))
-            .unwrap();
+        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 10);
         assert_eq!(payout_date.month(), 3);
@@ -94,12 +86,7 @@ mod tests {
             money_amount: 1900,
         };
 
-        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow)
-            .ok_or(format!(
-                "Payroll date calculation failed with the following data: {:?}. Check your inputs.",
-                &data
-            ))
-            .unwrap();
+        let payout_date = super::next_payout_date(data.payout_day_of_month, MockNow).unwrap();
 
         assert_eq!(payout_date.day(), 9);
         assert_eq!(payout_date.month(), 3);

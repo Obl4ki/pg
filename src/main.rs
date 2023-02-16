@@ -16,11 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         payout_day_of_month: 23,
         money_amount: 1900,
     };
-    let payout_date =
-        piggy::next_payout_date(data.payout_day_of_month, NowFromChrono).ok_or(format!(
-            "Payroll date calculation failed with the following data: {:?}. Check your inputs.",
-            &data
-        ))?;
+    let payout_date = piggy::next_payout_date(data.payout_day_of_month, NowFromChrono)?;
 
     let days_until_payout = piggy::days_until_payout(payout_date, NowFromChrono)?;
 
