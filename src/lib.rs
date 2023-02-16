@@ -37,6 +37,10 @@ pub fn days_until_payout<T: GetToday>(
     }
 }
 
+pub fn calculate_money_per_day(money_amount: u32, days_until_payout: u32) -> f32 {
+    money_amount as f32 / days_until_payout as f32
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -112,5 +116,18 @@ mod tests {
             super::days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 7).unwrap(), MockNow);
         //
         assert!(days_until_payout.is_err())
+    }
+
+    #[test]
+    fn test_calculate_money_per_day() {
+        let amount = 100;
+        let days = 10;
+
+        assert!(10. - calculate_money_per_day(amount, days).abs() < 0.001);
+
+        let amount = 0;
+        let days = 10;
+
+        assert!(0. - calculate_money_per_day(amount, days).abs() < 0.001);
     }
 }

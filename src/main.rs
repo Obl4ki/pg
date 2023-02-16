@@ -22,9 +22,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             &data
         ))?;
 
-    let days_until_payout = piggy::days_until_payout(payout_date, NowFromChrono);
+    let days_until_payout = piggy::days_until_payout(payout_date, NowFromChrono)?;
 
-    println!("{days_until_payout:?} days left");
+    let amount_per_day = piggy::calculate_money_per_day(data.money_amount, days_until_payout);
 
+    println!("Zostalo {days_until_payout} dni.");
+
+    println!("{amount_per_day}");
     Ok(())
 }
