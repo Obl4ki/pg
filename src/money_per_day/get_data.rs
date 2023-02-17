@@ -1,5 +1,10 @@
-use crate::UserInputData;
 use std::io::stdin;
+
+#[derive(Clone, Copy, Debug)]
+pub struct UserInputData {
+    pub payout_day_of_month: u32,
+    pub money_amount: u32,
+}
 
 pub fn from_stdin() -> Result<UserInputData, String> {
     println!("Wprowadz dzien wyplaty: ");

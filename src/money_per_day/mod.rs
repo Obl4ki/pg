@@ -8,12 +8,6 @@ use chronoutil::RelativeDuration;
 use dates::NowFromChrono;
 use traits::GetToday;
 
-#[derive(Clone, Copy, Debug)]
-pub struct UserInputData {
-    pub payout_day_of_month: u32,
-    pub money_amount: u32,
-}
-
 pub fn next_payout_date(day: u32) -> Result<NaiveDate, String> {
     _next_payout_date(day, NowFromChrono)
 }

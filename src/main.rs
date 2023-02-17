@@ -1,8 +1,11 @@
-use piggy::app::{App, AppResponse};
+mod money_per_day;
+
+use money_per_day::app::{App, AppResponse};
+use money_per_day::get_data;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let data = piggy::get_data::from_stdin()?;
+    let data = get_data::from_stdin()?;
 
     let AppResponse {
         days_until_payout,

@@ -1,4 +1,4 @@
-use crate::traits::GetToday;
+use crate::money_per_day::traits::GetToday;
 
 use chrono::prelude::*;
 
