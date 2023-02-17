@@ -1,6 +1,8 @@
-use crate::money_per_day::traits::GetToday;
-
 use chrono::prelude::*;
+
+pub trait GetToday {
+    fn today(&self) -> NaiveDate;
+}
 
 pub struct NowFromChrono;
 

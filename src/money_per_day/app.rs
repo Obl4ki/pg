@@ -1,9 +1,15 @@
-use crate::money_per_day::get_data::UserInputData;
-use crate::money_per_day::{calculate_money_per_day, days_until_payout, next_payout_date};
+use crate::money_per_day::data_access::UserInputData;
+use crate::money_per_day::domain::{calculate_money_per_day, days_until_payout, next_payout_date};
 
 #[derive(Clone, Copy, Debug)]
 pub struct App {
     data: UserInputData,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct AppResponse {
+    pub days_until_payout: u32,
+    pub amount_per_day: f32,
 }
 
 impl App {
@@ -23,10 +29,4 @@ impl App {
             amount_per_day,
         })
     }
-}
-
-#[derive(Clone, Copy, Debug)]
-pub struct AppResponse {
-    pub days_until_payout: u32,
-    pub amount_per_day: f32,
 }

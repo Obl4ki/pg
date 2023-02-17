@@ -1,11 +1,11 @@
 mod money_per_day;
 
-use money_per_day::app::{App, AppResponse};
-use money_per_day::get_data;
+use crate::money_per_day::app::{App, AppResponse};
+use crate::money_per_day::data_access;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let data = get_data::from_stdin()?;
+    let data = data_access::from_stdin()?;
 
     let AppResponse {
         days_until_payout,
