@@ -1,19 +1,17 @@
 mod money_per_day;
 
-use crate::money_per_day::app::{App, AppResponse};
+use crate::money_per_day::app::App;
 use crate::money_per_day::data_access;
+use crate::money_per_day::locale;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let data = data_access::from_stdin()?;
 
-    let AppResponse {
-        days_until_payout,
-        amount_per_day,
-    } = App::from_data(data).run()?;
+    let app = App::<locale::Polish>::from_data(data);
 
-    println!("Zostalo {days_until_payout} dni.");
+    let res = app.run()?;
 
-    println!("{amount_per_day}");
+    app.print_response(res);
     Ok(())
 }
