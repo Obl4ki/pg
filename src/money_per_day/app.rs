@@ -1,14 +1,9 @@
-use std::marker::PhantomData;
-
-use crate::money_per_day::data_access::UserInputData;
 use crate::money_per_day::domain::{calculate_money_per_day, days_until_payout, next_payout_date};
 use crate::money_per_day::locale::Lang;
 
-#[derive(Clone, Copy, Debug)]
-pub struct App<L: Lang> {
-    data: UserInputData,
-    lang_marker: PhantomData<L>,
-}
+use super::data_access::from_stdin;
+
+pub struct App;
 
 #[derive(Clone, Copy, Debug)]
 pub struct AppResponse {
@@ -16,20 +11,15 @@ pub struct AppResponse {
     pub amount_per_day: f32,
 }
 
-impl<L: Lang> App<L> {
-    pub fn from_data(data: UserInputData) -> Self {
-        Self {
-            data,
-            lang_marker: PhantomData,
-        }
-    }
+impl App {
+    pub fn run() -> Result<AppResponse, String> {
+        let data = from_stdin()?;
 
-    pub fn run(&self) -> Result<AppResponse, String> {
-        let payout_date = next_payout_date(self.data.payout_day_of_month)?;
+        let payout_date = next_payout_date(data.payout_day_of_month)?;
 
         let days_until_payout = days_until_payout(payout_date)?;
 
-        let amount_per_day = calculate_money_per_day(self.data.money_amount, days_until_payout);
+        let amount_per_day = calculate_money_per_day(data.money_amount, days_until_payout);
 
         Ok(AppResponse {
             days_until_payout,
@@ -37,7 +27,7 @@ impl<L: Lang> App<L> {
         })
     }
 
-    pub fn print_response(&self, res: AppResponse) {
+    pub fn print_response<L: Lang>(res: AppResponse) {
         println!("{}", L::how_many_days_left(res.days_until_payout));
 
         println!("{}", L::how_much_money_per_day(res.amount_per_day));
