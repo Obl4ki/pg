@@ -7,6 +7,6 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
     let res = App::run()?;
 
-    App::print_response::<locale::English>(res);
+    res.print::<locale::English>();
     Ok(())
 }

@@ -11,6 +11,14 @@ pub struct AppResponse {
     pub amount_per_day: f32,
 }
 
+impl AppResponse {
+    pub fn print<L: Lang>(&self) {
+        println!("{}", L::how_many_days_left(self.days_until_payout));
+
+        println!("{}", L::how_much_money_per_day(self.amount_per_day));
+    }
+}
+
 impl App {
     pub fn run() -> Result<AppResponse, String> {
         let data = from_stdin()?;
@@ -25,11 +33,5 @@ impl App {
             days_until_payout,
             amount_per_day,
         })
-    }
-
-    pub fn print_response<L: Lang>(res: AppResponse) {
-        println!("{}", L::how_many_days_left(res.days_until_payout));
-
-        println!("{}", L::how_much_money_per_day(res.amount_per_day));
     }
 }
