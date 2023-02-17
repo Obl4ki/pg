@@ -1,6 +1,7 @@
 pub mod dates;
 pub mod get_data;
 pub mod traits;
+pub mod app;
 
 use chrono::prelude::*;
 use chronoutil::RelativeDuration;
