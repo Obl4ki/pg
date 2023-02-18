@@ -1,20 +1,33 @@
 use crate::money_per_day::dates::GetToday;
 use crate::money_per_day::dates::NowFromChrono;
 use chrono::prelude::*;
+use chrono::Duration;
 use chronoutil::RelativeDuration;
+use thiserror::Error;
 
-pub fn next_payout_date(day: u32) -> Result<NaiveDate, String> {
+#[derive(Error, Debug)]
+pub enum DateError {
+    #[error("Day {day} is not correct")]
+    DayNumberNotCorrect { day: u32 },
+    #[error("{now:?} date is before {date_of_payroll:?}")]
+    PaydayOccuredInThePast {
+        now: NaiveDate,
+        date_of_payroll: Duration,
+    },
+}
+
+pub fn next_payout_date(day: u32) -> Result<NaiveDate, DateError> {
     _next_payout_date(day, NowFromChrono)
 }
 
 pub(crate) fn _next_payout_date<T: GetToday>(
     day: u32,
     today_provider: T,
-) -> Result<NaiveDate, String> {
+) -> Result<NaiveDate, DateError> {
     let now = today_provider.today();
     let date_of_payroll = now
         .with_day(day)
-        .ok_or(format!("Day {:?} is not correct.", &day))?;
+        .ok_or(DateError::DayNumberNotCorrect { day })?;
 
     if now.day() >= day {
         let month_after_payroll = date_of_payroll + RelativeDuration::months(1);
@@ -25,21 +38,24 @@ pub(crate) fn _next_payout_date<T: GetToday>(
     }
 }
 
-pub fn days_until_payout(payout_date: NaiveDate) -> Result<u32, String> {
+pub fn days_until_payout(payout_date: NaiveDate) -> Result<u32, DateError> {
     _days_until_payout(payout_date, NowFromChrono)
 }
 
 pub(crate) fn _days_until_payout<T: GetToday>(
     payout_date: NaiveDate,
     today_provider: T,
-) -> Result<u32, String> {
+) -> Result<u32, DateError> {
     let now = today_provider.today();
     let date_of_payroll = payout_date.signed_duration_since(now);
     if date_of_payroll.num_days() >= 0 {
         // Add 1 because the current day is also important
         Ok(1 + date_of_payroll.num_days() as u32)
     } else {
-        Err(format!("{now:?} date is before {date_of_payroll:?}"))
+        Err(DateError::PaydayOccuredInThePast {
+            now,
+            date_of_payroll,
+        })
     }
 }
 

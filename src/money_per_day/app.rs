@@ -1,7 +1,8 @@
-use crate::money_per_day::domain::{calculate_money_per_day, days_until_payout, next_payout_date};
+use crate::money_per_day::data_access::UserInputData;
+use crate::money_per_day::domain::{
+    calculate_money_per_day, days_until_payout, next_payout_date, DateError,
+};
 use crate::money_per_day::locale::Lang;
-
-use super::data_access::UserInputData;
 
 pub struct App;
 
@@ -20,7 +21,7 @@ impl AppResponse {
 }
 
 impl App {
-    pub fn run(data: UserInputData) -> Result<AppResponse, String> {
+    pub fn run(data: UserInputData) -> Result<AppResponse, DateError> {
         let payout_date = next_payout_date(data.payout_day_of_month)?;
 
         let days_until_payout = days_until_payout(payout_date)?;
