@@ -90,7 +90,6 @@ mod tests {
 
         let days_until_payout =
             super::_days_until_payout(NaiveDate::from_ymd_opt(2023, 2, 7).unwrap(), MockNow);
-        //
         assert!(days_until_payout.is_err())
     }
 
