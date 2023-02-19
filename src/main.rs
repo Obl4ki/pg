@@ -6,9 +6,11 @@ use crate::money_per_day::data_access::UserInputData;
 
 #[macro_use]
 extern crate rocket;
+use money_per_day::app::AppResponse;
+use rocket_contrib::json::Json;
 
 #[get("/pay_per_day?<day>&<amount>")]
-fn index(day: u32, amount: u32) -> Option<String> {
+fn pay_per_day(day: u32, amount: u32) -> Option<Json<AppResponse>> {
     let data = UserInputData {
         payout_day_of_month: day,
         money_amount: amount,
@@ -16,9 +18,9 @@ fn index(day: u32, amount: u32) -> Option<String> {
 
     let res = App::run(data).ok()?;
 
-    Some(format!("{:?}", &res))
+    Some(Json(res))
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![index]).launch();
+    rocket::ignite().mount("/", routes![pay_per_day]).launch();
 }
