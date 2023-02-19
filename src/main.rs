@@ -1,13 +1,24 @@
+#![feature(proc_macro_hygiene, decl_macro)]
+
 mod money_per_day;
-
 use crate::money_per_day::app::App;
-use crate::money_per_day::data_access::from_stdin;
-use crate::money_per_day::locale;
-use std::error::Error;
+use crate::money_per_day::data_access::UserInputData;
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let data = from_stdin::<locale::English>()?;
-    let res = App::run(data)?;
-    res.print::<locale::English>();
-    Ok(())
+#[macro_use]
+extern crate rocket;
+
+#[get("/pay_per_day?<day>&<amount>")]
+fn index(day: u32, amount: u32) -> Option<String> {
+    let data = UserInputData {
+        payout_day_of_month: day,
+        money_amount: amount,
+    };
+
+    let res = App::run(data).ok()?;
+
+    Some(format!("{:?}", &res))
+}
+
+fn main() {
+    rocket::ignite().mount("/", routes![index]).launch();
 }

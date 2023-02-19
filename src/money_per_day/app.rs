@@ -3,10 +3,10 @@ use crate::money_per_day::domain::{
     calculate_money_per_day, days_until_payout, next_payout_date, DateError,
 };
 use crate::money_per_day::locale::Lang;
-
+use serde::Serialize;
 pub struct App;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
 pub struct AppResponse {
     pub days_until_payout: u32,
     pub amount_per_day: f32,
